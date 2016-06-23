@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "outFile": "./demo/dennin.js",
+    "sourceMap": false
+  },
+  "filesGlob": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "files": [
+    "./src/dennin.ts"
+  ],
+  "atom": {
+    "rewriteTsconfig": true
+  }
+}
