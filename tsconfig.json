@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
@@ -14,7 +13,11 @@
     "node_modules"
   ],
   "files": [
-    "./src/dennin.ts"
+    "./src/character.ts",
+    "./src/common.ts",
+    "./src/dennin.ts",
+    "./src/dom-controller.ts",
+    "./src/enums.ts"
   ],
   "atom": {
     "rewriteTsconfig": true
