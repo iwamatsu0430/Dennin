@@ -13,10 +13,9 @@ module Dennin {
     domController.reload()
   }
 
-  export function create(position: Position = {x: 0, y: 0}): Splite {
+  export function create(rect: Rect = {position: {x: 0, y: 0}, size: {width: 100, height: 100}}): Splite {
     initDomController()
-    let size = {width: 100, height: 100}
-    const newCaharacter = Splite.create(position, size)
+    const newCaharacter = Splite.create(rect)
     domController.add(newCaharacter.element)
     return newCaharacter
   }

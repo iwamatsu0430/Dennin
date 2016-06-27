@@ -10,6 +10,11 @@ module Dennin {
     height: number
   }
 
+  export interface Rect {
+    position: Position
+    size: Size
+  }
+
   export interface KeyConfig {
     goLeft: number,
     goRight: number,

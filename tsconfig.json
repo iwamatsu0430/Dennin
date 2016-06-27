@@ -13,11 +13,13 @@
     "node_modules"
   ],
   "files": [
-    "./src/character.ts",
     "./src/common.ts",
     "./src/dennin.ts",
     "./src/dom-controller.ts",
-    "./src/enums.ts"
+    "./src/enums.ts",
+    "./src/splite/playable-splite.ts",
+    "./src/splite/splite-helper.ts",
+    "./src/splite/splite.ts"
   ],
   "atom": {
     "rewriteTsconfig": true

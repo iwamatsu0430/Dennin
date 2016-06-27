@@ -1,38 +1,9 @@
 module Dennin {
 
-  export class Splite {
-
-    static create(position: Position, size: Size): Splite {
-      let element = document.createElement('splite')
-      let splite = new Splite(element)
-      splite.position = position
-      splite.size = size
-
-      return splite
-    }
-
-    element: Element
-    position: Position
-    size: Size
-
-    constructor(element: Element) {
-      this.element = element
-    }
-
-    goLeft(): void {}
-    goRight(): void {}
-    doJump(): void {}
-    doFall(): void {}
-    doAttack(): void {}
-    stopLeft(): void {}
-    stopRight(): void {}
-    stopJump(): void {}
-  }
-
   export class PlayableSplite extends Splite {
 
-    static create(position: Position, sie: Size): PlayableSplite {
-      let playable = <PlayableSplite>Splite.create(position, sie)
+    static create(rect: Rect): PlayableSplite {
+      let playable = <PlayableSplite>Splite.create(rect)
       playable.element.addEventListener('keydown', (e: KeyboardEvent) => {
         if (playable.keyConfig === null || playable.keyConfig === undefined) {
           return
