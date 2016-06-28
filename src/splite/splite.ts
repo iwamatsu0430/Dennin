@@ -12,7 +12,7 @@ module Dennin {
     rect: Rect
 
     constructor(rect: Rect) {
-      this.element = document.createElement(Config.NodeName)
+      this.element = document.createElement(Dennin.config.nodeName)
       this.helper = new SpliteHelper()
       this.rect = rect
       this.initStyle()
@@ -21,7 +21,6 @@ module Dennin {
     }
 
     initStyle(): void {
-      this.element.classList.add(Config.classNames.spliteBase)
       this.element.style.left = `${this.rect.position.x}px`
       this.element.style.top = `${this.rect.position.y}px`
       this.element.style.width = `${this.rect.size.width}px`

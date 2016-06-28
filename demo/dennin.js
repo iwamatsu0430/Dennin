@@ -7,89 +7,60 @@ var Dennin;
 (function (Dennin) {
     var Config = (function () {
         function Config() {
+            this.nodeName = 'DENNIN-SPLITE';
+            this.defaultKeyConfig = {
+                goLeft: 37,
+                goRight: 39,
+                doJump: 38,
+                doFall: 40,
+                doAttack: 65
+            };
         }
-        Config.NodeName = 'DENNIN-SPLITE';
-        Config.classNames = {
-            spliteBase: 'dennin-splite-base'
-        };
         return Config;
     }());
     Dennin.Config = Config;
 })(Dennin || (Dennin = {}));
 var Dennin;
 (function (Dennin) {
-    var DOMController = (function () {
-        function DOMController() {
+    var EnumDef = (function () {
+        function EnumDef(code) {
+            this.code = code;
         }
-        DOMController.prototype.reload = function () {
-            var doms = document.querySelectorAll("body *");
-            this.bodyDoms = Array.prototype.slice.call(doms);
-        };
-        DOMController.prototype.add = function (dom) {
-            this.bodyDoms.push(dom);
-        };
-        DOMController.prototype.remove = function (dom) {
-            var index = this.bodyDoms.indexOf(dom);
-            if (index >= 0) {
-                this.bodyDoms.splice(index, 1);
-            }
-        };
-        return DOMController;
+        return EnumDef;
     }());
-    Dennin.DOMController = DOMController;
-})(Dennin || (Dennin = {}));
-var Dennin;
-(function (Dennin) {
-    var domController;
-    function init() {
-        if (domController === undefined) {
-            domController = new Dennin.DOMController();
+    var EnumBase = (function () {
+        function EnumBase() {
+            var _this = this;
+            this.valueOf = function (code) {
+                var filtered = _this.values.filter(function (value) { return value.code === code; });
+                return filtered.length > 0 ? filtered[0] : null;
+            };
         }
-        var style = document.createElement('style');
-        style.innerHTML = "\n      ." + Dennin.Config.classNames.spliteBase + " {\n        position: fixed;\n        background-color: red; // FIXME: temp style for debug\n      }\n    ";
-        document.getElementsByTagName('head')[0].appendChild(style);
-        document.addEventListener('keydown', function (e) {
-            domController.bodyDoms.forEach(function (dom) {
-                if (dom.nodeName !== Dennin.Config.NodeName) {
-                    return;
-                }
-                dom.dispatchEvent(new CustomEvent(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyDown], { detail: e.keyCode }));
-            });
-        });
-        document.addEventListener('keyup', function (e) {
-            domController.bodyDoms.forEach(function (dom) {
-                if (dom.nodeName !== Dennin.Config.NodeName) {
-                    return;
-                }
-                dom.dispatchEvent(new CustomEvent(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyUp], { detail: e.keyCode }));
-            });
-        });
-    }
-    Dennin.init = init;
-    function loadDOMs() {
-        domController.reload();
-    }
-    Dennin.loadDOMs = loadDOMs;
-    function create(rect) {
-        if (rect === void 0) { rect = { position: { x: 0, y: 0 }, size: { width: 32, height: 32 } }; }
-        var splite = Dennin.PlayableSplite.create(rect);
-        domController.add(splite.element);
-        return splite;
-    }
-    Dennin.create = create;
-    function getDoms() {
-        return domController.bodyDoms;
-    }
-    Dennin.getDoms = getDoms;
-    function bookmarklet() {
-        loadDOMs();
-        create();
-    }
-    Dennin.bookmarklet = bookmarklet;
-})(Dennin || (Dennin = {}));
-Dennin.init();
-var Dennin;
-(function (Dennin) {
+        return EnumBase;
+    }());
+    var Enums = (function () {
+        function Enums() {
+            this.Foo = new Foo();
+        }
+        return Enums;
+    }());
+    Dennin.Enums = Enums;
+    var FooDef = (function (_super) {
+        __extends(FooDef, _super);
+        function FooDef() {
+            _super.apply(this, arguments);
+        }
+        return FooDef;
+    }(EnumDef));
+    var Foo = (function (_super) {
+        __extends(Foo, _super);
+        function Foo() {
+            _super.apply(this, arguments);
+            this.A = new FooDef('A');
+            this.B = new FooDef('B');
+        }
+        return Foo;
+    }(EnumBase));
     (function (SpliteEvent) {
         SpliteEvent[SpliteEvent["OnKeyDown"] = 0] = "OnKeyDown";
         SpliteEvent[SpliteEvent["OnKeyUp"] = 1] = "OnKeyUp";
@@ -108,9 +79,96 @@ var Dennin;
 })(Dennin || (Dennin = {}));
 var Dennin;
 (function (Dennin) {
+    var Environment = (function () {
+        function Environment() {
+            this.setupStyle();
+            this.addGlobalKeyEvent();
+        }
+        Environment.prototype.setupStyle = function () {
+            var style = document.createElement('style');
+            style.innerHTML = "\n        " + Dennin.config.nodeName + " {\n          position: fixed;\n          background-color: red; // FIXME: temp style for debug\n        }\n      ";
+            document.getElementsByTagName('head')[0].appendChild(style);
+        };
+        Environment.prototype.addGlobalKeyEvent = function () {
+            var _this = this;
+            document.addEventListener('keydown', function (e) {
+                _this.bodyDoms.forEach(function (dom) {
+                    if (dom.nodeName !== Dennin.config.nodeName) {
+                        return;
+                    }
+                    dom.dispatchEvent(new CustomEvent(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyDown], { detail: e.keyCode }));
+                });
+            });
+            document.addEventListener('keyup', function (e) {
+                _this.bodyDoms.forEach(function (dom) {
+                    if (dom.nodeName !== Dennin.config.nodeName) {
+                        return;
+                    }
+                    dom.dispatchEvent(new CustomEvent(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyUp], { detail: e.keyCode }));
+                });
+            });
+        };
+        Environment.prototype.reload = function () {
+            var doms = document.querySelectorAll("body *");
+            this.bodyDoms = Array.prototype.slice.call(doms);
+        };
+        Environment.prototype.add = function (dom) {
+            this.bodyDoms.push(dom);
+        };
+        Environment.prototype.remove = function (dom) {
+            var index = this.bodyDoms.indexOf(dom);
+            if (index >= 0) {
+                this.bodyDoms.splice(index, 1);
+            }
+        };
+        return Environment;
+    }());
+    Dennin.Environment = Environment;
+})(Dennin || (Dennin = {}));
+var Dennin;
+(function (Dennin) {
+    var environment;
+    function init() {
+        if (Dennin.config === undefined) {
+            Dennin.config = new Dennin.Config();
+        }
+        if (Dennin.enums === undefined) {
+            Dennin.enums = new Dennin.Enums();
+        }
+        if (environment === undefined) {
+            environment = new Dennin.Environment();
+        }
+        var e = Dennin.enums.Foo.A.code;
+        console.log(e);
+    }
+    Dennin.init = init;
+    function loadDOMs() {
+        environment.reload();
+    }
+    Dennin.loadDOMs = loadDOMs;
+    function create(rect) {
+        if (rect === void 0) { rect = { position: { x: 0, y: 0 }, size: { width: 32, height: 32 } }; }
+        var splite = Dennin.PlayableSplite.create(rect);
+        environment.add(splite.element);
+        return splite;
+    }
+    Dennin.create = create;
+    function getDoms() {
+        return environment.bodyDoms;
+    }
+    Dennin.getDoms = getDoms;
+    function bookmarklet() {
+        loadDOMs();
+        create();
+    }
+    Dennin.bookmarklet = bookmarklet;
+})(Dennin || (Dennin = {}));
+Dennin.init();
+var Dennin;
+(function (Dennin) {
     var Splite = (function () {
         function Splite(rect) {
-            this.element = document.createElement(Dennin.Config.NodeName);
+            this.element = document.createElement(Dennin.config.nodeName);
             this.helper = new Dennin.SpliteHelper();
             this.rect = rect;
             this.initStyle();
@@ -120,7 +178,6 @@ var Dennin;
             return new Splite(rect);
         };
         Splite.prototype.initStyle = function () {
-            this.element.classList.add(Dennin.Config.classNames.spliteBase);
             this.element.style.left = this.rect.position.x + "px";
             this.element.style.top = this.rect.position.y + "px";
             this.element.style.width = this.rect.size.width + "px";
@@ -212,13 +269,7 @@ var Dennin;
             return playable;
         };
         PlayableSplite.prototype.setDefaultKeyConfig = function () {
-            return this.setKeyConfig({
-                goLeft: 37,
-                goRight: 39,
-                doJump: 38,
-                doFall: 40,
-                doAttack: 65
-            });
+            return this.setKeyConfig(Dennin.config.defaultKeyConfig);
         };
         PlayableSplite.prototype.setKeyConfig = function (newKeyConfig) {
             this.keyConfig = newKeyConfig;

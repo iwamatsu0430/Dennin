@@ -2,10 +2,14 @@ module Dennin {
 
   export class Config {
 
-    static NodeName = 'DENNIN-SPLITE'
+    nodeName: string = 'DENNIN-SPLITE'
 
-    static classNames = {
-      spliteBase: 'dennin-splite-base'
+    defaultKeyConfig: KeyConfig = {
+      goLeft: 37,
+      goRight: 39,
+      doJump: 38,
+      doFall: 40,
+      doAttack: 65
     }
   }
 }

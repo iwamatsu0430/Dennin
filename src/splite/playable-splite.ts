@@ -50,13 +50,7 @@ module Dennin {
     keyConfig: KeyConfig
 
     setDefaultKeyConfig(): Splite {
-      return this.setKeyConfig({
-        goLeft: 37,
-        goRight: 39,
-        doJump: 38,
-        doFall: 40,
-        doAttack: 65
-      })
+      return this.setKeyConfig(Dennin.config.defaultKeyConfig)
     }
 
     setKeyConfig(newKeyConfig: KeyConfig): Splite {

@@ -16,8 +16,8 @@
     "./src/common.ts",
     "./src/config.ts",
     "./src/dennin.ts",
-    "./src/dom-controller.ts",
     "./src/enums.ts",
+    "./src/environment.ts",
     "./src/splite/playable-splite.ts",
     "./src/splite/splite-helper.ts",
     "./src/splite/splite.ts"
