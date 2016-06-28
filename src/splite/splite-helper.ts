@@ -2,29 +2,29 @@ module Dennin {
 
   export class SpliteHelper {
 
-    collision(splite: Splite): Splite {
-      return this.collisionElements(this.collisionWindow(splite))
+    collision(splite: Splite): void {
+      this.collisionWindow(splite)
+      this.collisionElements(splite)
     }
 
-    collisionWindow(splite: Splite): Splite {
+    collisionWindow(splite: Splite): void {
       let rect = splite.rect
-      let isCllision = false
+      let isCollided = false
       if (rect.position.x < 0) {
         rect.position.x = 0
-        isCllision = true
+        isCollided = true
       }
       if (rect.position.x + rect.size.width > window.innerWidth) {
         rect.position.x = window.innerWidth - rect.size.width
-        isCllision = true
+        isCollided = true
       }
       splite.rect = rect
-      if (isCllision) {
+      if (isCollided) {
         splite.dispatch(SpliteEvent[SpliteEvent.OnCollisionWindow])
       }
-      return splite
     }
 
-    collisionElements(splite: Splite): Splite {
+    collisionElements(splite: Splite): void {
       return null
     }
   }

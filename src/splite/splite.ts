@@ -3,26 +3,48 @@ module Dennin {
   export class Splite {
 
     static create(rect: Rect): Splite {
-      let element = document.createElement('splite')
-      let splite = new Splite(element)
-      splite.rect = rect
-
-      return splite
+      return new Splite(rect)
     }
 
-    helper: SpliteHelper
+    private helper: SpliteHelper
 
-    element: Element
+    element: HTMLElement
     rect: Rect
 
-    constructor(element: Element) {
-      this.element = element
+    constructor(rect: Rect) {
+      this.element = document.createElement(Config.NodeName)
       this.helper = new SpliteHelper()
+      this.rect = rect
+      this.initStyle()
+
+      document.getElementsByTagName('body')[0].appendChild(this.element)
     }
 
-    on(eventName: string, f: Function): void {}
-    off(eventName: string): void {}
-    dispatch(eventName: string): void {}
+    initStyle(): void {
+      this.element.classList.add(Config.classNames.spliteBase)
+      this.element.style.left = `${this.rect.position.x}px`
+      this.element.style.top = `${this.rect.position.y}px`
+      this.element.style.width = `${this.rect.size.width}px`
+      this.element.style.height = `${this.rect.size.height}px`
+    }
+
+    on(eventName: string, f: EventListener): Splite {
+      this.element.addEventListener(eventName, f)
+      return this
+    }
+
+    off(eventName: string, f: EventListener): Splite {
+      this.element.removeEventListener(eventName, f)
+      return this
+    }
+
+    dispatch(eventName: string, option?: any): Splite {
+      const e = new CustomEvent(eventName, {
+        detail: option
+      })
+      this.element.dispatchEvent(e)
+      return this
+    }
 
     run(): void {}
     update(): void {}

@@ -2,7 +2,7 @@ module Dennin {
 
   export class DOMController {
 
-    bodyDoms: Element[]
+    bodyDoms: HTMLElement[]
 
     constructor() {}
 
@@ -11,11 +11,11 @@ module Dennin {
       this.bodyDoms = Array.prototype.slice.call(doms)
     }
 
-    add(dom: Element): void {
+    add(dom: HTMLElement): void {
       this.bodyDoms.push(dom)
     }
 
-    remove(dom: Element): void {
+    remove(dom: HTMLElement): void {
       const index = this.bodyDoms.indexOf(dom)
       if (index >= 0) {
         this.bodyDoms.splice(index, 1)

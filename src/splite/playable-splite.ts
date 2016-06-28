@@ -1,35 +1,47 @@
+/// <reference path="./splite.ts" />
+
 module Dennin {
 
   export class PlayableSplite extends Splite {
 
     static create(rect: Rect): PlayableSplite {
-      let playable = <PlayableSplite>Splite.create(rect)
-      playable.element.addEventListener('keydown', (e: KeyboardEvent) => {
+      let playable = new PlayableSplite(rect)
+      playable.on(SpliteEvent[SpliteEvent.OnKeyDown], (e: CustomEvent) => {
         if (playable.keyConfig === null || playable.keyConfig === undefined) {
           return
         }
-        if (e.charCode === playable.keyConfig.goLeft) {
+        const keyCode = e.detail
+        if (keyCode === playable.keyConfig.goLeft) {
           playable.goLeft()
-        } else if (e.charCode === playable.keyConfig.goRight) {
+          playable.dispatch(SpliteEvent[SpliteEvent.OnGoLeft])
+        } else if (keyCode === playable.keyConfig.goRight) {
           playable.goRight()
-        } else if (e.charCode === playable.keyConfig.doJump) {
+          playable.dispatch(SpliteEvent[SpliteEvent.OnGoRight])
+        } else if (keyCode === playable.keyConfig.doJump) {
           playable.doJump()
-        } else if (e.charCode === playable.keyConfig.doFall) {
+          playable.dispatch(SpliteEvent[SpliteEvent.OnDoJump])
+        } else if (keyCode === playable.keyConfig.doFall) {
           playable.doFall()
-        } else if (e.charCode === playable.keyConfig.doAttack) {
+          playable.dispatch(SpliteEvent[SpliteEvent.OnDoFall])
+        } else if (keyCode === playable.keyConfig.doAttack) {
           playable.doAttack()
+          playable.dispatch(SpliteEvent[SpliteEvent.OnDoAttack])
         }
       })
-      playable.element.addEventListener('keyup', (e: KeyboardEvent) => {
+      playable.on(SpliteEvent[SpliteEvent.OnKeyUp], (e: CustomEvent) => {
         if (playable.keyConfig === null || playable.keyConfig === undefined) {
           return
         }
-        if (e.charCode === playable.keyConfig.goLeft) {
+        const keyCode = e.detail
+        if (keyCode === playable.keyConfig.goLeft) {
           playable.stopLeft()
-        } else if (e.charCode === playable.keyConfig.goRight) {
+          playable.dispatch(SpliteEvent[SpliteEvent.OnStopLeft])
+        } else if (keyCode === playable.keyConfig.goRight) {
           playable.stopRight()
-        } else if (e.charCode === playable.keyConfig.doJump) {
+          playable.dispatch(SpliteEvent[SpliteEvent.OnStopRight])
+        } else if (keyCode === playable.keyConfig.doJump) {
           playable.stopJump()
+          playable.dispatch(SpliteEvent[SpliteEvent.OnStopJump])
         }
       })
       return playable
