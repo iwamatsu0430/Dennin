@@ -2,11 +2,16 @@ module Dennin {
 
   export class Environment {
 
-    bodyDoms: HTMLElement[]
+    isRunningClock: boolean = false
+
+    splites: Splite[] = []
+
+    bodyDoms: HTMLElement[] = []
 
     constructor() {
       this.setupStyle()
       this.addGlobalKeyEvent()
+      this.startClock()
     }
 
     setupStyle(): void {
@@ -22,21 +27,30 @@ module Dennin {
 
     addGlobalKeyEvent(): void {
       document.addEventListener('keydown', (e: KeyboardEvent) => {
-        this.bodyDoms.forEach(dom => {
-          if (dom.nodeName !== Dennin.config.nodeName) {
-            return
-          }
-          dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyDown.code, {detail: e.keyCode}))
+        this.splites.forEach(splite => {
+          splite.dispatch(Dennin.enums.SpliteEvent.OnKeyDown.code, e.keyCode)
         })
       })
       document.addEventListener('keyup', (e: KeyboardEvent) => {
-        this.bodyDoms.forEach(dom => {
-          if (dom.nodeName !== Dennin.config.nodeName) {
-            return
-          }
-          dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyUp.code, {detail: e.keyCode}))
+        this.splites.forEach(splite => {
+          splite.dispatch(Dennin.enums.SpliteEvent.OnKeyUp.code, e.keyCode)
         })
       })
+    }
+
+    startClock(): void {
+      this.isRunningClock = true
+      const f = () => {
+        this.splites.forEach((splite: Splite) => splite.run())
+        if (this.isRunningClock) {
+          setTimeout(f, 1000 / Dennin.config.fps)
+        }
+      }
+      f()
+    }
+
+    stopClock(): void {
+      this.isRunningClock = false
     }
 
     reload(): void {
@@ -48,10 +62,25 @@ module Dennin {
       this.bodyDoms.push(dom)
     }
 
+    addSplite(splite: Splite): void {
+      this.splites.push(splite)
+      this.bodyDoms.push(splite.element)
+      document.getElementsByTagName('body')[0].appendChild(splite.element)
+    }
+
     remove(dom: HTMLElement): void {
       const index = this.bodyDoms.indexOf(dom)
       if (index >= 0) {
         this.bodyDoms.splice(index, 1)
+      }
+    }
+
+    removeSplite(splite: Splite): void {
+      const index = this.splites.indexOf(splite)
+      if (index >= 0) {
+        splite.element.parentNode.removeChild(splite.element)
+        this.splites.splice(index, 1)
+        this.remove(splite.element)
       }
     }
   }

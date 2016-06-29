@@ -6,21 +6,29 @@ module Dennin {
       return new Splite(rect)
     }
 
-    private helper: SpliteHelper
-
     element: HTMLElement
+
     rect: Rect
+
+    accel: Accel = {
+      x: 0,
+      y: 0
+    }
+
+    status: SpliteStatus = {
+      isMovingX: false,
+      isLanding: false,
+      isJumping: false,
+      isFloating: true
+    }
 
     constructor(rect: Rect) {
       this.element = document.createElement(Dennin.config.nodeName)
-      this.helper = new SpliteHelper()
       this.rect = rect
-      this.initStyle()
-
-      document.getElementsByTagName('body')[0].appendChild(this.element)
+      this.setStyle()
     }
 
-    initStyle(): void {
+    setStyle(): void {
       this.element.style.left = `${this.rect.position.x}px`
       this.element.style.top = `${this.rect.position.y}px`
       this.element.style.width = `${this.rect.size.width}px`
@@ -45,10 +53,56 @@ module Dennin {
       return this
     }
 
-    run(): void {}
-    update(): void {}
-    kill(): void {}
+    kill(): void {
+      Dennin.removeSplite(this)
+    }
 
+    run(): void {
+      this.loop()
+      this.update()
+    }
+
+    update(): void {
+      this.setStyle()
+    }
+
+    collision(): void {
+      this.collisionWindow()
+      this.collisionElements()
+    }
+
+    collisionWindow(): void {
+      let rect = this.rect
+      let isCollided = false
+      if (rect.position.x < 0) {
+        rect.position.x = 0
+        isCollided = true
+      }
+      if (rect.position.x + rect.size.width > window.innerWidth) {
+        rect.position.x = window.innerWidth - rect.size.width
+        isCollided = true
+      }
+      this.rect = rect
+      if (isCollided) {
+        this.dispatch(Dennin.enums.SpliteEvent.OnCollisionWindow.code)
+      }
+    }
+
+    collisionElements(): void {
+      this.status.isFloating = true
+      const cllideX = Dennin.getDoms().filter(dom => {
+        const collisionLX = this.rect.position.x <= dom.offsetLeft + dom.offsetWidth
+        const collisionRX = this.rect.position.x + this.rect.size.width >= dom.offsetLeft
+        return collisionLX || collisionRX
+        // const collisionTY = this.rect.position.y <= dom.offsetTop + dom.offsetHeight
+        // const collisionBY = this.rect.position.y + this.rect.size.height >= dom.offsetTop
+        // const collisionY = collisionTY || collisionBY
+        //
+        // return true
+      })
+    }
+
+    loop(): void {}
     goLeft(): void {}
     goRight(): void {}
     doJump(): void {}
@@ -57,5 +111,9 @@ module Dennin {
     stopLeft(): void {}
     stopRight(): void {}
     stopJump(): void {}
+    landing(): void {}
+    floating(): void {}
+    onOver(): void {}
+    onMouseMove(): void {}
   }
 }

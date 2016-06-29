@@ -11,5 +11,7 @@ module Dennin {
       doFall: 40,
       doAttack: 65
     }
+
+    fps: number = 60
   }
 }

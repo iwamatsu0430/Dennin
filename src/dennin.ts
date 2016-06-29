@@ -26,10 +26,14 @@ module Dennin {
     environment.reload()
   }
 
-  export function create(rect: Rect = {position: {x: 0, y: 0}, size: {width: 32, height: 32}}): PlayableSplite {
-    const splite = PlayableSplite.create(rect)
-    environment.add(splite.element)
+  export function createDennin(rect: Rect = {position: {x: 0, y: 0}, size: {width: 32, height: 32}}): SpliteDennin {
+    const splite = SpliteDennin.create(rect)
+    environment.addSplite(splite)
     return splite
+  }
+
+  export function removeSplite(splite: Splite): void {
+    environment.removeSplite(splite)
   }
 
   export function getDoms(): HTMLElement[] {
@@ -38,7 +42,7 @@ module Dennin {
 
   export function bookmarklet(): void {
     loadDOMs()
-    create()
+    createDennin()
   }
 }
 

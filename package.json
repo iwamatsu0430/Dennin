@@ -10,10 +10,10 @@
   },
   "devDependencies": {},
   "scripts": {
-    "demo": "./node_modules/http-server/bin/http-server ./demo",
-    "compile": "./node_modules/typescript/bin/tsc -p ./",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "./node_modules/watch/cli.js 'npm run compile' src/"
+    "demo": "./node_modules/.bin/http-server ./demo/",
+    "compile": "./node_modules/.bin/tsc -p ./",
+    "watch": "./node_modules/.bin/watch 'npm run compile' src/",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "iwamatsu0430",
   "license": "ISC"

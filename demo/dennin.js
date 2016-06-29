@@ -15,6 +15,7 @@ var Dennin;
                 doFall: 40,
                 doAttack: 65
             };
+            this.fps = 60;
         }
         return Config;
     }());
@@ -77,8 +78,12 @@ var Dennin;
 (function (Dennin) {
     var Environment = (function () {
         function Environment() {
+            this.isRunningClock = false;
+            this.splites = [];
+            this.bodyDoms = [];
             this.setupStyle();
             this.addGlobalKeyEvent();
+            this.startClock();
         }
         Environment.prototype.setupStyle = function () {
             var style = document.createElement('style');
@@ -88,21 +93,29 @@ var Dennin;
         Environment.prototype.addGlobalKeyEvent = function () {
             var _this = this;
             document.addEventListener('keydown', function (e) {
-                _this.bodyDoms.forEach(function (dom) {
-                    if (dom.nodeName !== Dennin.config.nodeName) {
-                        return;
-                    }
-                    dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyDown.code, { detail: e.keyCode }));
+                _this.splites.forEach(function (splite) {
+                    splite.dispatch(Dennin.enums.SpliteEvent.OnKeyDown.code, e.keyCode);
                 });
             });
             document.addEventListener('keyup', function (e) {
-                _this.bodyDoms.forEach(function (dom) {
-                    if (dom.nodeName !== Dennin.config.nodeName) {
-                        return;
-                    }
-                    dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyUp.code, { detail: e.keyCode }));
+                _this.splites.forEach(function (splite) {
+                    splite.dispatch(Dennin.enums.SpliteEvent.OnKeyUp.code, e.keyCode);
                 });
             });
+        };
+        Environment.prototype.startClock = function () {
+            var _this = this;
+            this.isRunningClock = true;
+            var f = function () {
+                _this.splites.forEach(function (splite) { return splite.run(); });
+                if (_this.isRunningClock) {
+                    setTimeout(f, 1000 / Dennin.config.fps);
+                }
+            };
+            f();
+        };
+        Environment.prototype.stopClock = function () {
+            this.isRunningClock = false;
         };
         Environment.prototype.reload = function () {
             var doms = document.querySelectorAll("body *");
@@ -111,10 +124,23 @@ var Dennin;
         Environment.prototype.add = function (dom) {
             this.bodyDoms.push(dom);
         };
+        Environment.prototype.addSplite = function (splite) {
+            this.splites.push(splite);
+            this.bodyDoms.push(splite.element);
+            document.getElementsByTagName('body')[0].appendChild(splite.element);
+        };
         Environment.prototype.remove = function (dom) {
             var index = this.bodyDoms.indexOf(dom);
             if (index >= 0) {
                 this.bodyDoms.splice(index, 1);
+            }
+        };
+        Environment.prototype.removeSplite = function (splite) {
+            var index = this.splites.indexOf(splite);
+            if (index >= 0) {
+                splite.element.parentNode.removeChild(splite.element);
+                this.splites.splice(index, 1);
+                this.remove(splite.element);
             }
         };
         return Environment;
@@ -140,20 +166,24 @@ var Dennin;
         environment.reload();
     }
     Dennin.loadDOMs = loadDOMs;
-    function create(rect) {
+    function createDennin(rect) {
         if (rect === void 0) { rect = { position: { x: 0, y: 0 }, size: { width: 32, height: 32 } }; }
-        var splite = Dennin.PlayableSplite.create(rect);
-        environment.add(splite.element);
+        var splite = Dennin.SpliteDennin.create(rect);
+        environment.addSplite(splite);
         return splite;
     }
-    Dennin.create = create;
+    Dennin.createDennin = createDennin;
+    function removeSplite(splite) {
+        environment.removeSplite(splite);
+    }
+    Dennin.removeSplite = removeSplite;
     function getDoms() {
         return environment.bodyDoms;
     }
     Dennin.getDoms = getDoms;
     function bookmarklet() {
         loadDOMs();
-        create();
+        createDennin();
     }
     Dennin.bookmarklet = bookmarklet;
 })(Dennin || (Dennin = {}));
@@ -162,16 +192,24 @@ var Dennin;
 (function (Dennin) {
     var Splite = (function () {
         function Splite(rect) {
+            this.accel = {
+                x: 0,
+                y: 0
+            };
+            this.status = {
+                isMovingX: false,
+                isLanding: false,
+                isJumping: false,
+                isFloating: true
+            };
             this.element = document.createElement(Dennin.config.nodeName);
-            this.helper = new Dennin.SpliteHelper();
             this.rect = rect;
-            this.initStyle();
-            document.getElementsByTagName('body')[0].appendChild(this.element);
+            this.setStyle();
         }
         Splite.create = function (rect) {
             return new Splite(rect);
         };
-        Splite.prototype.initStyle = function () {
+        Splite.prototype.setStyle = function () {
             this.element.style.left = this.rect.position.x + "px";
             this.element.style.top = this.rect.position.y + "px";
             this.element.style.width = this.rect.size.width + "px";
@@ -192,98 +230,22 @@ var Dennin;
             this.element.dispatchEvent(e);
             return this;
         };
-        Splite.prototype.run = function () { };
-        Splite.prototype.update = function () { };
-        Splite.prototype.kill = function () { };
-        Splite.prototype.goLeft = function () { };
-        Splite.prototype.goRight = function () { };
-        Splite.prototype.doJump = function () { };
-        Splite.prototype.doFall = function () { };
-        Splite.prototype.doAttack = function () { };
-        Splite.prototype.stopLeft = function () { };
-        Splite.prototype.stopRight = function () { };
-        Splite.prototype.stopJump = function () { };
-        return Splite;
-    }());
-    Dennin.Splite = Splite;
-})(Dennin || (Dennin = {}));
-var Dennin;
-(function (Dennin) {
-    var PlayableSplite = (function (_super) {
-        __extends(PlayableSplite, _super);
-        function PlayableSplite() {
-            _super.apply(this, arguments);
-        }
-        PlayableSplite.create = function (rect) {
-            var playable = new PlayableSplite(rect);
-            playable.on(Dennin.enums.SpliteEvent.OnKeyDown.code, function (e) {
-                if (playable.keyConfig === null || playable.keyConfig === undefined) {
-                    return;
-                }
-                var keyCode = e.detail;
-                if (keyCode === playable.keyConfig.goLeft) {
-                    playable.goLeft();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnGoLeft.code);
-                }
-                else if (keyCode === playable.keyConfig.goRight) {
-                    playable.goRight();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnGoRight.code);
-                }
-                else if (keyCode === playable.keyConfig.doJump) {
-                    playable.doJump();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnDoJump.code);
-                }
-                else if (keyCode === playable.keyConfig.doFall) {
-                    playable.doFall();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnDoFall.code);
-                }
-                else if (keyCode === playable.keyConfig.doAttack) {
-                    playable.doAttack();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnDoAttack.code);
-                }
-            });
-            playable.on(Dennin.enums.SpliteEvent.OnKeyUp.code, function (e) {
-                if (playable.keyConfig === null || playable.keyConfig === undefined) {
-                    return;
-                }
-                var keyCode = e.detail;
-                if (keyCode === playable.keyConfig.goLeft) {
-                    playable.stopLeft();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnStopLeft.code);
-                }
-                else if (keyCode === playable.keyConfig.goRight) {
-                    playable.stopRight();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnStopRight.code);
-                }
-                else if (keyCode === playable.keyConfig.doJump) {
-                    playable.stopJump();
-                    playable.dispatch(Dennin.enums.SpliteEvent.OnStopJump.code);
-                }
-            });
-            return playable;
+        Splite.prototype.kill = function () {
+            Dennin.removeSplite(this);
         };
-        PlayableSplite.prototype.setDefaultKeyConfig = function () {
-            return this.setKeyConfig(Dennin.config.defaultKeyConfig);
+        Splite.prototype.run = function () {
+            this.loop();
+            this.update();
         };
-        PlayableSplite.prototype.setKeyConfig = function (newKeyConfig) {
-            this.keyConfig = newKeyConfig;
-            return this;
+        Splite.prototype.update = function () {
+            this.setStyle();
         };
-        return PlayableSplite;
-    }(Dennin.Splite));
-    Dennin.PlayableSplite = PlayableSplite;
-})(Dennin || (Dennin = {}));
-var Dennin;
-(function (Dennin) {
-    var SpliteHelper = (function () {
-        function SpliteHelper() {
-        }
-        SpliteHelper.prototype.collision = function (splite) {
-            this.collisionWindow(splite);
-            this.collisionElements(splite);
+        Splite.prototype.collision = function () {
+            this.collisionWindow();
+            this.collisionElements();
         };
-        SpliteHelper.prototype.collisionWindow = function (splite) {
-            var rect = splite.rect;
+        Splite.prototype.collisionWindow = function () {
+            var rect = this.rect;
             var isCollided = false;
             if (rect.position.x < 0) {
                 rect.position.x = 0;
@@ -293,15 +255,168 @@ var Dennin;
                 rect.position.x = window.innerWidth - rect.size.width;
                 isCollided = true;
             }
-            splite.rect = rect;
+            this.rect = rect;
             if (isCollided) {
-                splite.dispatch(Dennin.enums.SpliteEvent.OnCollisionWindow.code);
+                this.dispatch(Dennin.enums.SpliteEvent.OnCollisionWindow.code);
             }
         };
-        SpliteHelper.prototype.collisionElements = function (splite) {
-            return null;
+        Splite.prototype.collisionElements = function () {
+            var _this = this;
+            this.status.isFloating = true;
+            var cllideX = Dennin.getDoms().filter(function (dom) {
+                var collisionLX = _this.rect.position.x <= dom.offsetLeft + dom.offsetWidth;
+                var collisionRX = _this.rect.position.x + _this.rect.size.width >= dom.offsetLeft;
+                return collisionLX || collisionRX;
+            });
         };
-        return SpliteHelper;
+        Splite.prototype.loop = function () { };
+        Splite.prototype.goLeft = function () { };
+        Splite.prototype.goRight = function () { };
+        Splite.prototype.doJump = function () { };
+        Splite.prototype.doFall = function () { };
+        Splite.prototype.doAttack = function () { };
+        Splite.prototype.stopLeft = function () { };
+        Splite.prototype.stopRight = function () { };
+        Splite.prototype.stopJump = function () { };
+        Splite.prototype.landing = function () { };
+        Splite.prototype.floating = function () { };
+        Splite.prototype.onOver = function () { };
+        Splite.prototype.onMouseMove = function () { };
+        return Splite;
     }());
-    Dennin.SpliteHelper = SpliteHelper;
+    Dennin.Splite = Splite;
+})(Dennin || (Dennin = {}));
+var Dennin;
+(function (Dennin) {
+    var SplitePlayable = (function (_super) {
+        __extends(SplitePlayable, _super);
+        function SplitePlayable(rect) {
+            _super.call(this, rect);
+            this.addKeyEvent();
+        }
+        SplitePlayable.create = function (rect) {
+            return new SplitePlayable(rect);
+        };
+        SplitePlayable.prototype.addKeyEvent = function () {
+            var _this = this;
+            this.on(Dennin.enums.SpliteEvent.OnKeyDown.code, function (e) {
+                if (_this.keyConfig === null || _this.keyConfig === undefined) {
+                    return;
+                }
+                var keyCode = e.detail;
+                if (keyCode === _this.keyConfig.goLeft) {
+                    _this.goLeft();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnGoLeft.code);
+                }
+                else if (keyCode === _this.keyConfig.goRight) {
+                    _this.goRight();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnGoRight.code);
+                }
+                else if (keyCode === _this.keyConfig.doJump) {
+                    _this.doJump();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnDoJump.code);
+                }
+                else if (keyCode === _this.keyConfig.doFall) {
+                    _this.doFall();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnDoFall.code);
+                }
+                else if (keyCode === _this.keyConfig.doAttack) {
+                    _this.doAttack();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnDoAttack.code);
+                }
+            });
+            this.on(Dennin.enums.SpliteEvent.OnKeyUp.code, function (e) {
+                if (_this.keyConfig === null || _this.keyConfig === undefined) {
+                    return;
+                }
+                var keyCode = e.detail;
+                if (keyCode === _this.keyConfig.goLeft) {
+                    _this.stopLeft();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnStopLeft.code);
+                }
+                else if (keyCode === _this.keyConfig.goRight) {
+                    _this.stopRight();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnStopRight.code);
+                }
+                else if (keyCode === _this.keyConfig.doJump) {
+                    _this.stopJump();
+                    _this.dispatch(Dennin.enums.SpliteEvent.OnStopJump.code);
+                }
+            });
+        };
+        SplitePlayable.prototype.setDefaultKeyConfig = function () {
+            return this.setKeyConfig(Dennin.config.defaultKeyConfig);
+        };
+        SplitePlayable.prototype.setKeyConfig = function (newKeyConfig) {
+            this.keyConfig = newKeyConfig;
+            return this;
+        };
+        return SplitePlayable;
+    }(Dennin.Splite));
+    Dennin.SplitePlayable = SplitePlayable;
+})(Dennin || (Dennin = {}));
+var Dennin;
+(function (Dennin) {
+    var SpliteDennin = (function (_super) {
+        __extends(SpliteDennin, _super);
+        function SpliteDennin() {
+            _super.apply(this, arguments);
+            this.direction = false;
+            this.jumpCount = 0;
+        }
+        SpliteDennin.create = function (rect) {
+            return new SpliteDennin(rect);
+        };
+        SpliteDennin.prototype.loop = function () {
+            this.collision();
+            this.rect.position.x += this.accel.x;
+            this.rect.position.y += this.accel.y;
+            this.moveY();
+            this.moveX();
+        };
+        SpliteDennin.prototype.moveY = function () {
+        };
+        SpliteDennin.prototype.moveX = function () {
+            if (!this.status.isMovingX && this.accel.x * this.accel.x >= 1) {
+                var counter = this.direction ? -1 : 1;
+                this.accel.x += counter;
+                if (this.accel.x * this.accel.x <= 1) {
+                    this.accel.x = 0;
+                }
+            }
+        };
+        SpliteDennin.prototype.goLeft = function () {
+            if (this.accel.x > 0 && this.direction) {
+                this.accel.x *= -0.8;
+            }
+            this.accel.x += -1 * ((this.accel.x === 0) ? 4 : 1);
+            this.direction = false;
+            this.status.isMovingX = true;
+        };
+        SpliteDennin.prototype.goRight = function () {
+            if (this.accel.x < 0 && !this.direction) {
+                this.accel.x *= -0.8;
+            }
+            this.accel.x += (this.accel.x === 0) ? 4 : 1;
+            this.direction = true;
+            this.status.isMovingX = true;
+        };
+        SpliteDennin.prototype.doJump = function () {
+        };
+        SpliteDennin.prototype.doFall = function () { };
+        SpliteDennin.prototype.doAttack = function () { };
+        SpliteDennin.prototype.stopLeft = function () {
+            this.status.isMovingX = false;
+        };
+        SpliteDennin.prototype.stopRight = function () {
+            this.status.isMovingX = false;
+        };
+        SpliteDennin.prototype.stopJump = function () { };
+        SpliteDennin.prototype.landing = function () { };
+        SpliteDennin.prototype.floating = function () { };
+        SpliteDennin.prototype.onOver = function () { };
+        SpliteDennin.prototype.onMouseMove = function () { };
+        return SpliteDennin;
+    }(Dennin.SplitePlayable));
+    Dennin.SpliteDennin = SpliteDennin;
 })(Dennin || (Dennin = {}));
