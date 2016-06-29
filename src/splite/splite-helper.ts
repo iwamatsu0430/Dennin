@@ -20,7 +20,7 @@ module Dennin {
       }
       splite.rect = rect
       if (isCollided) {
-        splite.dispatch(SpliteEvent[SpliteEvent.OnCollisionWindow])
+        splite.dispatch(Dennin.enums.SpliteEvent.OnCollisionWindow.code)
       }
     }
 

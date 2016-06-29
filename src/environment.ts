@@ -26,7 +26,7 @@ module Dennin {
           if (dom.nodeName !== Dennin.config.nodeName) {
             return
           }
-          dom.dispatchEvent(new CustomEvent(SpliteEvent[SpliteEvent.OnKeyDown], {detail: e.keyCode}))
+          dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyDown.code, {detail: e.keyCode}))
         })
       })
       document.addEventListener('keyup', (e: KeyboardEvent) => {
@@ -34,7 +34,7 @@ module Dennin {
           if (dom.nodeName !== Dennin.config.nodeName) {
             return
           }
-          dom.dispatchEvent(new CustomEvent(SpliteEvent[SpliteEvent.OnKeyUp], {detail: e.keyCode}))
+          dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyUp.code, {detail: e.keyCode}))
         })
       })
     }

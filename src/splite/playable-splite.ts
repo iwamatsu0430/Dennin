@@ -6,42 +6,42 @@ module Dennin {
 
     static create(rect: Rect): PlayableSplite {
       let playable = new PlayableSplite(rect)
-      playable.on(SpliteEvent[SpliteEvent.OnKeyDown], (e: CustomEvent) => {
+      playable.on(Dennin.enums.SpliteEvent.OnKeyDown.code, (e: CustomEvent) => {
         if (playable.keyConfig === null || playable.keyConfig === undefined) {
           return
         }
         const keyCode = e.detail
         if (keyCode === playable.keyConfig.goLeft) {
           playable.goLeft()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnGoLeft])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnGoLeft.code)
         } else if (keyCode === playable.keyConfig.goRight) {
           playable.goRight()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnGoRight])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnGoRight.code)
         } else if (keyCode === playable.keyConfig.doJump) {
           playable.doJump()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnDoJump])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnDoJump.code)
         } else if (keyCode === playable.keyConfig.doFall) {
           playable.doFall()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnDoFall])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnDoFall.code)
         } else if (keyCode === playable.keyConfig.doAttack) {
           playable.doAttack()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnDoAttack])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnDoAttack.code)
         }
       })
-      playable.on(SpliteEvent[SpliteEvent.OnKeyUp], (e: CustomEvent) => {
+      playable.on(Dennin.enums.SpliteEvent.OnKeyUp.code, (e: CustomEvent) => {
         if (playable.keyConfig === null || playable.keyConfig === undefined) {
           return
         }
         const keyCode = e.detail
         if (keyCode === playable.keyConfig.goLeft) {
           playable.stopLeft()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnStopLeft])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnStopLeft.code)
         } else if (keyCode === playable.keyConfig.goRight) {
           playable.stopRight()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnStopRight])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnStopRight.code)
         } else if (keyCode === playable.keyConfig.doJump) {
           playable.stopJump()
-          playable.dispatch(SpliteEvent[SpliteEvent.OnStopJump])
+          playable.dispatch(Dennin.enums.SpliteEvent.OnStopJump.code)
         }
       })
       return playable

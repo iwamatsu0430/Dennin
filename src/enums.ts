@@ -1,7 +1,9 @@
 module Dennin {
 
   class EnumDef {
+
     code: string
+
     constructor(code: string) {
       this.code = code
     }
@@ -18,27 +20,24 @@ module Dennin {
   }
 
   export class Enums {
-    Foo: Foo = new Foo()
+    SpliteEvent: SpliteEvent = new SpliteEvent()
   }
 
-  class FooDef extends EnumDef {}
-  class Foo extends EnumBase<FooDef> {
-    A = new FooDef('A')
-    B = new FooDef('B')
-  }
-
-  export enum SpliteEvent {
-    OnKeyDown,
-    OnKeyUp,
-    OnGoLeft,
-    OnGoRight,
-    OnDoJump,
-    OnDoFall,
-    OnDoAttack,
-    OnStopLeft,
-    OnStopRight,
-    OnStopJump,
-    OnCollisionWindow,
-    OnCollisionElements
+  class SpliteEventDef extends EnumDef {}
+  class SpliteEvent extends EnumBase<SpliteEventDef> {
+    OnKeyDown = new SpliteEventDef('OnKeyDown')
+    OnKeyUp = new SpliteEventDef('OnKeyUp')
+    OnGoLeft = new SpliteEventDef('OnGoLeft')
+    OnGoRight = new SpliteEventDef('OnGoRight')
+    OnDoJump = new SpliteEventDef('OnDoJump')
+    OnDoFall = new SpliteEventDef('OnDoFall')
+    OnDoAttack = new SpliteEventDef('OnDoAttack')
+    OnStopLeft = new SpliteEventDef('OnStopLeft')
+    OnStopRight = new SpliteEventDef('OnStopRight')
+    OnStopJump = new SpliteEventDef('OnStopJump')
+    OnCollisionWindow = new SpliteEventDef('OnCollisionWindow')
+    OnCollisionElements = new SpliteEventDef('OnCollisionElements')
+    
+    values = [this.OnKeyDown, this.OnKeyUp, this.OnGoLeft, this.OnGoRight, this.OnDoJump, this.OnDoFall, this.OnDoAttack, this.OnStopLeft, this.OnStopRight, this.OnStopJump, this.OnCollisionWindow, this.OnCollisionElements]
   }
 }

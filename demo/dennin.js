@@ -40,42 +40,38 @@ var Dennin;
     }());
     var Enums = (function () {
         function Enums() {
-            this.Foo = new Foo();
+            this.SpliteEvent = new SpliteEvent();
         }
         return Enums;
     }());
     Dennin.Enums = Enums;
-    var FooDef = (function (_super) {
-        __extends(FooDef, _super);
-        function FooDef() {
+    var SpliteEventDef = (function (_super) {
+        __extends(SpliteEventDef, _super);
+        function SpliteEventDef() {
             _super.apply(this, arguments);
         }
-        return FooDef;
+        return SpliteEventDef;
     }(EnumDef));
-    var Foo = (function (_super) {
-        __extends(Foo, _super);
-        function Foo() {
+    var SpliteEvent = (function (_super) {
+        __extends(SpliteEvent, _super);
+        function SpliteEvent() {
             _super.apply(this, arguments);
-            this.A = new FooDef('A');
-            this.B = new FooDef('B');
+            this.OnKeyDown = new SpliteEventDef('OnKeyDown');
+            this.OnKeyUp = new SpliteEventDef('OnKeyUp');
+            this.OnGoLeft = new SpliteEventDef('OnGoLeft');
+            this.OnGoRight = new SpliteEventDef('OnGoRight');
+            this.OnDoJump = new SpliteEventDef('OnDoJump');
+            this.OnDoFall = new SpliteEventDef('OnDoFall');
+            this.OnDoAttack = new SpliteEventDef('OnDoAttack');
+            this.OnStopLeft = new SpliteEventDef('OnStopLeft');
+            this.OnStopRight = new SpliteEventDef('OnStopRight');
+            this.OnStopJump = new SpliteEventDef('OnStopJump');
+            this.OnCollisionWindow = new SpliteEventDef('OnCollisionWindow');
+            this.OnCollisionElements = new SpliteEventDef('OnCollisionElements');
+            this.values = [this.OnKeyDown, this.OnKeyUp, this.OnGoLeft, this.OnGoRight, this.OnDoJump, this.OnDoFall, this.OnDoAttack, this.OnStopLeft, this.OnStopRight, this.OnStopJump, this.OnCollisionWindow, this.OnCollisionElements];
         }
-        return Foo;
+        return SpliteEvent;
     }(EnumBase));
-    (function (SpliteEvent) {
-        SpliteEvent[SpliteEvent["OnKeyDown"] = 0] = "OnKeyDown";
-        SpliteEvent[SpliteEvent["OnKeyUp"] = 1] = "OnKeyUp";
-        SpliteEvent[SpliteEvent["OnGoLeft"] = 2] = "OnGoLeft";
-        SpliteEvent[SpliteEvent["OnGoRight"] = 3] = "OnGoRight";
-        SpliteEvent[SpliteEvent["OnDoJump"] = 4] = "OnDoJump";
-        SpliteEvent[SpliteEvent["OnDoFall"] = 5] = "OnDoFall";
-        SpliteEvent[SpliteEvent["OnDoAttack"] = 6] = "OnDoAttack";
-        SpliteEvent[SpliteEvent["OnStopLeft"] = 7] = "OnStopLeft";
-        SpliteEvent[SpliteEvent["OnStopRight"] = 8] = "OnStopRight";
-        SpliteEvent[SpliteEvent["OnStopJump"] = 9] = "OnStopJump";
-        SpliteEvent[SpliteEvent["OnCollisionWindow"] = 10] = "OnCollisionWindow";
-        SpliteEvent[SpliteEvent["OnCollisionElements"] = 11] = "OnCollisionElements";
-    })(Dennin.SpliteEvent || (Dennin.SpliteEvent = {}));
-    var SpliteEvent = Dennin.SpliteEvent;
 })(Dennin || (Dennin = {}));
 var Dennin;
 (function (Dennin) {
@@ -96,7 +92,7 @@ var Dennin;
                     if (dom.nodeName !== Dennin.config.nodeName) {
                         return;
                     }
-                    dom.dispatchEvent(new CustomEvent(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyDown], { detail: e.keyCode }));
+                    dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyDown.code, { detail: e.keyCode }));
                 });
             });
             document.addEventListener('keyup', function (e) {
@@ -104,7 +100,7 @@ var Dennin;
                     if (dom.nodeName !== Dennin.config.nodeName) {
                         return;
                     }
-                    dom.dispatchEvent(new CustomEvent(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyUp], { detail: e.keyCode }));
+                    dom.dispatchEvent(new CustomEvent(Dennin.enums.SpliteEvent.OnKeyUp.code, { detail: e.keyCode }));
                 });
             });
         };
@@ -138,8 +134,6 @@ var Dennin;
         if (environment === undefined) {
             environment = new Dennin.Environment();
         }
-        var e = Dennin.enums.Foo.A.code;
-        console.log(e);
     }
     Dennin.init = init;
     function loadDOMs() {
@@ -222,48 +216,48 @@ var Dennin;
         }
         PlayableSplite.create = function (rect) {
             var playable = new PlayableSplite(rect);
-            playable.on(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyDown], function (e) {
+            playable.on(Dennin.enums.SpliteEvent.OnKeyDown.code, function (e) {
                 if (playable.keyConfig === null || playable.keyConfig === undefined) {
                     return;
                 }
                 var keyCode = e.detail;
                 if (keyCode === playable.keyConfig.goLeft) {
                     playable.goLeft();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnGoLeft]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnGoLeft.code);
                 }
                 else if (keyCode === playable.keyConfig.goRight) {
                     playable.goRight();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnGoRight]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnGoRight.code);
                 }
                 else if (keyCode === playable.keyConfig.doJump) {
                     playable.doJump();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnDoJump]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnDoJump.code);
                 }
                 else if (keyCode === playable.keyConfig.doFall) {
                     playable.doFall();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnDoFall]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnDoFall.code);
                 }
                 else if (keyCode === playable.keyConfig.doAttack) {
                     playable.doAttack();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnDoAttack]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnDoAttack.code);
                 }
             });
-            playable.on(Dennin.SpliteEvent[Dennin.SpliteEvent.OnKeyUp], function (e) {
+            playable.on(Dennin.enums.SpliteEvent.OnKeyUp.code, function (e) {
                 if (playable.keyConfig === null || playable.keyConfig === undefined) {
                     return;
                 }
                 var keyCode = e.detail;
                 if (keyCode === playable.keyConfig.goLeft) {
                     playable.stopLeft();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnStopLeft]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnStopLeft.code);
                 }
                 else if (keyCode === playable.keyConfig.goRight) {
                     playable.stopRight();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnStopRight]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnStopRight.code);
                 }
                 else if (keyCode === playable.keyConfig.doJump) {
                     playable.stopJump();
-                    playable.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnStopJump]);
+                    playable.dispatch(Dennin.enums.SpliteEvent.OnStopJump.code);
                 }
             });
             return playable;
@@ -301,7 +295,7 @@ var Dennin;
             }
             splite.rect = rect;
             if (isCollided) {
-                splite.dispatch(Dennin.SpliteEvent[Dennin.SpliteEvent.OnCollisionWindow]);
+                splite.dispatch(Dennin.enums.SpliteEvent.OnCollisionWindow.code);
             }
         };
         SpliteHelper.prototype.collisionElements = function (splite) {
