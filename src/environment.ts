@@ -6,7 +6,7 @@ module Dennin {
 
     splites: Splite[] = []
 
-    bodyDoms: HTMLElement[] = []
+    bodyElements: HTMLElement[] = []
 
     constructor() {
       this.setupStyle()
@@ -55,23 +55,23 @@ module Dennin {
 
     reload(): void {
       const doms = document.querySelectorAll("body *")
-      this.bodyDoms = Array.prototype.slice.call(doms)
+      this.bodyElements = Array.prototype.slice.call(doms)
     }
 
     add(dom: HTMLElement): void {
-      this.bodyDoms.push(dom)
+      this.bodyElements.push(dom)
     }
 
     addSplite(splite: Splite): void {
       this.splites.push(splite)
-      this.bodyDoms.push(splite.element)
+      this.bodyElements.push(splite.element)
       document.getElementsByTagName('body')[0].appendChild(splite.element)
     }
 
     remove(dom: HTMLElement): void {
-      const index = this.bodyDoms.indexOf(dom)
+      const index = this.bodyElements.indexOf(dom)
       if (index >= 0) {
-        this.bodyDoms.splice(index, 1)
+        this.bodyElements.splice(index, 1)
       }
     }
 

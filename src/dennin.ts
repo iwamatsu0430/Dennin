@@ -36,8 +36,8 @@ module Dennin {
     environment.removeSplite(splite)
   }
 
-  export function getDoms(): HTMLElement[] {
-    return environment.bodyDoms
+  export function getElements(): HTMLElement[] {
+    return environment.bodyElements
   }
 
   export function bookmarklet(): void {

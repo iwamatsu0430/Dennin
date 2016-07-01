@@ -8,6 +8,8 @@ module Dennin {
 
     element: HTMLElement
 
+    collidedElements: HTMLElement[] = []
+
     rect: Rect
 
     accel: Accel = {
@@ -90,15 +92,23 @@ module Dennin {
 
     collisionElements(): void {
       this.status.isFloating = true
-      const cllideX = Dennin.getDoms().filter(dom => {
-        const collisionLX = this.rect.position.x <= dom.offsetLeft + dom.offsetWidth
-        const collisionRX = this.rect.position.x + this.rect.size.width >= dom.offsetLeft
-        return collisionLX || collisionRX
-        // const collisionTY = this.rect.position.y <= dom.offsetTop + dom.offsetHeight
-        // const collisionBY = this.rect.position.y + this.rect.size.height >= dom.offsetTop
-        // const collisionY = collisionTY || collisionBY
-        //
-        // return true
+      this.collidedElements = Dennin.getElements().filter((element: HTMLElement) => {
+        const collisionLX = this.rect.position.x <= element.offsetLeft + element.offsetWidth
+        const collisionRX = this.rect.position.x + this.rect.size.width >= element.offsetLeft
+        const collisionX = collisionLX || collisionRX
+        if(!collisionX) {
+          return false
+        }
+
+        const collisionTY = this.rect.position.y <= element.offsetTop + element.offsetHeight
+        const collisionBY = this.rect.position.y + this.rect.size.height >= element.offsetTop
+        const collisionY = collisionTY || collisionBY
+        return collisionY
+      })
+      this.collidedElements.forEach((element: HTMLElement) => {
+        const prevCondition = this.rect.position.y + this.rect.size.height < element.offsetTop
+        const collisionThrough = this.rect.position.y + this.rect.size.height > element.offsetTop + this.accel.y
+        prevCondition && collisionThrough && this.accel.y >= 0
       })
     }
 
