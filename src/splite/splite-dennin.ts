@@ -41,7 +41,10 @@ module Dennin {
       if (this.accel.x > 0 && this.direction) {
         this.accel.x *= -0.8
       }
-      this.accel.x += -1 * ((this.accel.x === 0) ? 4 : 1)
+      this.accel.x += -1 * ((this.accel.x === 0) ? 2 : 0.5)
+      if (this.accel.x < -15) {
+        this.accel.x = -15
+      }
       this.direction = false
       this.status.isMovingX = true
     }
@@ -50,7 +53,10 @@ module Dennin {
       if (this.accel.x < 0 && !this.direction) {
         this.accel.x *= -0.8
       }
-      this.accel.x += (this.accel.x === 0) ? 4 : 1
+      this.accel.x += (this.accel.x === 0) ? 2 : 0.5
+      if (this.accel.x > 15) {
+        this.accel.x = 15
+      }
       this.direction = true
       this.status.isMovingX = true
     }

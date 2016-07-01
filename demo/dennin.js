@@ -81,6 +81,7 @@ var Dennin;
             this.isRunningClock = false;
             this.splites = [];
             this.bodyDoms = [];
+            this.keyBuffers = [];
             this.setupStyle();
             this.addGlobalKeyEvent();
             this.startClock();
@@ -93,13 +94,17 @@ var Dennin;
         Environment.prototype.addGlobalKeyEvent = function () {
             var _this = this;
             document.addEventListener('keydown', function (e) {
-                _this.splites.forEach(function (splite) {
-                    splite.dispatch(Dennin.enums.SpliteEvent.OnKeyDown.code, e.keyCode);
-                });
+                var keyCode = e.keyCode;
+                if (_this.keyBuffers.indexOf(keyCode) === -1) {
+                    _this.keyBuffers.push(keyCode);
+                }
             });
             document.addEventListener('keyup', function (e) {
+                var keyCode = e.keyCode;
+                var index = _this.keyBuffers.indexOf(keyCode);
+                _this.keyBuffers.splice(index, 1);
                 _this.splites.forEach(function (splite) {
-                    splite.dispatch(Dennin.enums.SpliteEvent.OnKeyUp.code, e.keyCode);
+                    splite.dispatch(Dennin.enums.SpliteEvent.OnKeyUp.code, keyCode);
                 });
             });
         };
@@ -107,7 +112,10 @@ var Dennin;
             var _this = this;
             this.isRunningClock = true;
             var f = function () {
-                _this.splites.forEach(function (splite) { return splite.run(); });
+                _this.splites.forEach(function (splite) {
+                    splite.dispatch(Dennin.enums.SpliteEvent.OnKeyDown.code, _this.keyBuffers.concat());
+                    splite.run();
+                });
                 if (_this.isRunningClock) {
                     setTimeout(f, 1000 / Dennin.config.fps);
                 }
@@ -303,7 +311,8 @@ var Dennin;
                 if (_this.keyConfig === null || _this.keyConfig === undefined) {
                     return;
                 }
-                var keyCode = e.detail;
+                var keyBuffers = e.detail;
+                var keyCode = keyBuffers[keyBuffers.length - 1];
                 if (keyCode === _this.keyConfig.goLeft) {
                     _this.goLeft();
                     _this.dispatch(Dennin.enums.SpliteEvent.OnGoLeft.code);
@@ -389,7 +398,10 @@ var Dennin;
             if (this.accel.x > 0 && this.direction) {
                 this.accel.x *= -0.8;
             }
-            this.accel.x += -1 * ((this.accel.x === 0) ? 4 : 1);
+            this.accel.x += -1 * ((this.accel.x === 0) ? 2 : 0.5);
+            if (this.accel.x < -15) {
+                this.accel.x = -15;
+            }
             this.direction = false;
             this.status.isMovingX = true;
         };
@@ -397,7 +409,10 @@ var Dennin;
             if (this.accel.x < 0 && !this.direction) {
                 this.accel.x *= -0.8;
             }
-            this.accel.x += (this.accel.x === 0) ? 4 : 1;
+            this.accel.x += (this.accel.x === 0) ? 2 : 0.5;
+            if (this.accel.x > 15) {
+                this.accel.x = 15;
+            }
             this.direction = true;
             this.status.isMovingX = true;
         };

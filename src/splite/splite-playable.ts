@@ -20,7 +20,8 @@ module Dennin {
         if (this.keyConfig === null || this.keyConfig === undefined) {
           return
         }
-        const keyCode = e.detail
+        const keyBuffers = e.detail
+        const keyCode = keyBuffers[keyBuffers.length - 1]
         if (keyCode === this.keyConfig.goLeft) {
           this.goLeft()
           this.dispatch(Dennin.enums.SpliteEvent.OnGoLeft.code)

@@ -8,6 +8,8 @@ module Dennin {
 
     bodyElements: HTMLElement[] = []
 
+    keyBuffers: number[] = []
+
     constructor() {
       this.setupStyle()
       this.addGlobalKeyEvent()
@@ -27,13 +29,17 @@ module Dennin {
 
     addGlobalKeyEvent(): void {
       document.addEventListener('keydown', (e: KeyboardEvent) => {
-        this.splites.forEach(splite => {
-          splite.dispatch(Dennin.enums.SpliteEvent.OnKeyDown.code, e.keyCode)
-        })
+        const keyCode = e.keyCode
+        if (this.keyBuffers.indexOf(keyCode) === -1) {
+          this.keyBuffers.push(keyCode)
+        }
       })
       document.addEventListener('keyup', (e: KeyboardEvent) => {
+        const keyCode = e.keyCode
+        const index = this.keyBuffers.indexOf(keyCode)
+        this.keyBuffers.splice(index, 1)
         this.splites.forEach(splite => {
-          splite.dispatch(Dennin.enums.SpliteEvent.OnKeyUp.code, e.keyCode)
+          splite.dispatch(Dennin.enums.SpliteEvent.OnKeyUp.code, keyCode)
         })
       })
     }
@@ -41,7 +47,10 @@ module Dennin {
     startClock(): void {
       this.isRunningClock = true
       const f = () => {
-        this.splites.forEach((splite: Splite) => splite.run())
+        this.splites.forEach((splite: Splite) => {
+          splite.dispatch(Dennin.enums.SpliteEvent.OnKeyDown.code, this.keyBuffers.concat())
+          splite.run()
+        })
         if (this.isRunningClock) {
           setTimeout(f, 1000 / Dennin.config.fps)
         }
